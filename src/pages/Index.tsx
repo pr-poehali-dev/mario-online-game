@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
 import Leaderboard from '@/components/Leaderboard';
+import RegistrationDialog from '@/components/RegistrationDialog';
 
 type BlockType = 'platform' | 'coin' | 'enemy' | 'flag' | 'star' | 'mushroom' | 'pipe' | 'empty';
 
@@ -153,8 +154,17 @@ export default function Index() {
       description: 'Телепорт между трубами',
     },
   ]);
+  const [username, setUsername] = useState<string>('');
+  const [showRegistration, setShowRegistration] = useState(false);
 
   useEffect(() => {
+    const storedUsername = localStorage.getItem('mario-username');
+    if (!storedUsername) {
+      setShowRegistration(true);
+    } else {
+      setUsername(storedUsername);
+    }
+
     const stored = localStorage.getItem('mario-levels');
     if (stored) {
       setSavedLevels(JSON.parse(stored));
@@ -501,8 +511,20 @@ export default function Index() {
     );
   };
 
+  const handleRegistrationComplete = (name: string) => {
+    setUsername(name);
+    localStorage.setItem('mario-username', name);
+    setShowRegistration(false);
+    toast({
+      title: `Добро пожаловать, ${name}! 🎮`,
+      description: 'Создавайте уровни и соревнуйтесь за место в таблице лидеров!',
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-300 via-sky-200 to-sky-100 p-8">
+      <RegistrationDialog open={showRegistration} onComplete={handleRegistrationComplete} />
+      
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-6xl font-bold text-primary mb-3 drop-shadow-lg">
@@ -511,6 +533,12 @@ export default function Index() {
           <p className="text-xl text-foreground/80">
             Играй и создавай собственные уровни!
           </p>
+          {username && (
+            <div className="mt-3 flex items-center justify-center gap-2">
+              <Icon name="User" size={20} className="text-[#E94E87]" />
+              <span className="text-lg font-semibold text-[#4A90E2]">Игрок: {username}</span>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-center gap-6 mb-6">
@@ -754,7 +782,14 @@ export default function Index() {
           </TabsContent>
 
           <TabsContent value="leaderboard">
-            <Leaderboard />
+            <Leaderboard 
+              currentPlayerName={username}
+              currentPlayerStats={{
+                levelsCompleted: stats.levelsCompleted,
+                coinsCollected: stats.coinsCollected,
+                achievementsUnlocked: achievements.filter(a => a.unlocked).length,
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="shop">

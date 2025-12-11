@@ -1,60 +1,90 @@
+import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 
 interface LeaderboardEntry {
-  rank: number;
   name: string;
   score: number;
   levelsCompleted: number;
   coinsCollected: number;
   achievements: number;
+  isCurrentPlayer?: boolean;
 }
 
-export default function Leaderboard() {
-  const leaderboardData: LeaderboardEntry[] = [
-    {
-      rank: 1,
-      name: 'Марио Мастер',
-      score: 15420,
-      levelsCompleted: 25,
-      coinsCollected: 450,
-      achievements: 8,
-    },
-    {
-      rank: 2,
-      name: 'Луиджи Про',
-      score: 12850,
-      levelsCompleted: 20,
-      coinsCollected: 380,
-      achievements: 7,
-    },
-    {
-      rank: 3,
-      name: 'Пич Королева',
-      score: 11200,
-      levelsCompleted: 18,
-      coinsCollected: 320,
-      achievements: 6,
-    },
-    {
-      rank: 4,
-      name: 'Боузер Босс',
-      score: 9500,
-      levelsCompleted: 15,
-      coinsCollected: 280,
-      achievements: 5,
-    },
-    {
-      rank: 5,
-      name: 'Йоши Быстрый',
-      score: 8200,
-      levelsCompleted: 12,
-      coinsCollected: 240,
-      achievements: 5,
-    },
-  ];
+interface LeaderboardProps {
+  currentPlayerName?: string;
+  currentPlayerStats?: {
+    levelsCompleted: number;
+    coinsCollected: number;
+    achievementsUnlocked: number;
+  };
+}
+
+export default function Leaderboard({ currentPlayerName, currentPlayerStats }: LeaderboardProps) {
+  const leaderboardData = useMemo(() => {
+    const baseData: LeaderboardEntry[] = [
+      {
+        name: 'Марио Мастер',
+        score: 15420,
+        levelsCompleted: 25,
+        coinsCollected: 450,
+        achievements: 8,
+      },
+      {
+        name: 'Луиджи Про',
+        score: 12850,
+        levelsCompleted: 20,
+        coinsCollected: 380,
+        achievements: 7,
+      },
+      {
+        name: 'Пич Королева',
+        score: 11200,
+        levelsCompleted: 18,
+        coinsCollected: 320,
+        achievements: 6,
+      },
+      {
+        name: 'Боузер Босс',
+        score: 9500,
+        levelsCompleted: 15,
+        coinsCollected: 280,
+        achievements: 5,
+      },
+      {
+        name: 'Йоши Быстрый',
+        score: 8200,
+        levelsCompleted: 12,
+        coinsCollected: 240,
+        achievements: 5,
+      },
+    ];
+
+    if (currentPlayerName && currentPlayerStats) {
+      const playerScore = 
+        currentPlayerStats.levelsCompleted * 500 + 
+        currentPlayerStats.coinsCollected * 10 + 
+        currentPlayerStats.achievementsUnlocked * 200;
+
+      const currentPlayer: LeaderboardEntry = {
+        name: currentPlayerName,
+        score: playerScore,
+        levelsCompleted: currentPlayerStats.levelsCompleted,
+        coinsCollected: currentPlayerStats.coinsCollected,
+        achievements: currentPlayerStats.achievementsUnlocked,
+        isCurrentPlayer: true,
+      };
+
+      const allPlayers = [...baseData, currentPlayer];
+      return allPlayers
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+    }
+
+    return baseData;
+  }, [currentPlayerName, currentPlayerStats]);
 
   const getMedalEmoji = (rank: number) => {
     switch (rank) {
@@ -101,42 +131,53 @@ export default function Leaderboard() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {leaderboardData.map((entry) => (
-            <TableRow key={entry.rank} className="hover:bg-[#4A90E2]/5">
-              <TableCell className="text-center">
-                <Badge variant="outline" className={`text-2xl ${getRankColor(entry.rank)}`}>
-                  {getMedalEmoji(entry.rank)}
-                </Badge>
-              </TableCell>
-              <TableCell className="font-semibold text-[#4A90E2]">
-                {entry.name}
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="flex items-center justify-center gap-1">
-                  <Icon name="Star" size={16} className="text-[#E94E87]" />
-                  <span className="font-bold text-[#E94E87]">{entry.score}</span>
-                </div>
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="flex items-center justify-center gap-1">
-                  <Icon name="Flag" size={16} className="text-[#50B498]" />
-                  <span className="text-[#50B498] font-medium">{entry.levelsCompleted}</span>
-                </div>
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-lg">🪙</span>
-                  <span className="text-[#FFD700] font-medium">{entry.coinsCollected}</span>
-                </div>
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="flex items-center justify-center gap-1">
-                  <Icon name="Award" size={16} className="text-[#FF8C42]" />
-                  <span className="text-[#FF8C42] font-medium">{entry.achievements}</span>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+          {leaderboardData.map((entry, index) => {
+            const rank = index + 1;
+            return (
+              <TableRow 
+                key={`${entry.name}-${rank}`} 
+                className={`hover:bg-[#4A90E2]/5 ${entry.isCurrentPlayer ? 'bg-[#E94E87]/10 border-l-4 border-[#E94E87]' : ''}`}
+              >
+                <TableCell className="text-center">
+                  <Badge variant="outline" className={`text-2xl ${getRankColor(rank)}`}>
+                    {getMedalEmoji(rank)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="font-semibold text-[#4A90E2]">
+                  {entry.name}
+                  {entry.isCurrentPlayer && (
+                    <Badge className="ml-2 bg-[#E94E87]">
+                      Вы
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex items-center justify-center gap-1">
+                    <Icon name="Star" size={16} className="text-[#E94E87]" />
+                    <span className="font-bold text-[#E94E87]">{entry.score}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex items-center justify-center gap-1">
+                    <Icon name="Flag" size={16} className="text-[#50B498]" />
+                    <span className="text-[#50B498] font-medium">{entry.levelsCompleted}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-lg">🪙</span>
+                    <span className="text-[#FFD700] font-medium">{entry.coinsCollected}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex items-center justify-center gap-1">
+                    <Icon name="Award" size={16} className="text-[#FF8C42]" />
+                    <span className="text-[#FF8C42] font-medium">{entry.achievements}</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
 
