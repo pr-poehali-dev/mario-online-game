@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
+import Leaderboard from '@/components/Leaderboard';
 
 type BlockType = 'platform' | 'coin' | 'enemy' | 'flag' | 'star' | 'mushroom' | 'pipe' | 'empty';
 
@@ -536,7 +537,7 @@ export default function Index() {
         </div>
 
         <Tabs defaultValue="game" className="w-full">
-          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-6">
+          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-5 mb-6">
             <TabsTrigger value="game" className="text-lg font-semibold">
               <Icon name="Gamepad2" className="mr-2" size={20} />
               Игра
@@ -545,12 +546,16 @@ export default function Index() {
               <Icon name="FolderOpen" className="mr-2" size={20} />
               Уровни
             </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-lg font-semibold">
+              <Icon name="Trophy" className="mr-2" size={20} />
+              Лидеры
+            </TabsTrigger>
             <TabsTrigger value="shop" className="text-lg font-semibold">
               <Icon name="ShoppingBag" className="mr-2" size={20} />
               Магазин
             </TabsTrigger>
             <TabsTrigger value="achievements" className="text-lg font-semibold">
-              <Icon name="Trophy" className="mr-2" size={20} />
+              <Icon name="Award" className="mr-2" size={20} />
               Достижения
             </TabsTrigger>
           </TabsList>
@@ -746,6 +751,10 @@ export default function Index() {
                 </div>
               )}
             </Card>
+          </TabsContent>
+
+          <TabsContent value="leaderboard">
+            <Leaderboard />
           </TabsContent>
 
           <TabsContent value="shop">
