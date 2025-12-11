@@ -6,6 +6,9 @@ import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
 import Leaderboard from '@/components/Leaderboard';
 import RegistrationDialog from '@/components/RegistrationDialog';
+import ProfileSettings from '@/components/ProfileSettings';
+import CommunityLevels from '@/components/CommunityLevels';
+import MyLevels from '@/components/MyLevels';
 
 type BlockType = 'platform' | 'coin' | 'enemy' | 'flag' | 'star' | 'mushroom' | 'pipe' | 'empty';
 
@@ -521,6 +524,27 @@ export default function Index() {
     });
   };
 
+  const handleUsernameChange = (newUsername: string) => {
+    setUsername(newUsername);
+    localStorage.setItem('mario-username', newUsername);
+  };
+
+  const handlePlayCommunityLevel = (level: any) => {
+    setCurrentLevel({
+      id: level.id,
+      name: level.name,
+      blocks: level.blocks,
+    });
+    setEditorBlocks(level.blocks);
+    const tabsList = document.querySelector('[role="tablist"]');
+    const gameTab = tabsList?.querySelector('[value="game"]') as HTMLElement;
+    gameTab?.click();
+    toast({
+      title: `Уровень загружен! 🎮`,
+      description: `"${level.name}" от ${level.author}`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-300 via-sky-200 to-sky-100 p-8">
       <RegistrationDialog open={showRegistration} onComplete={handleRegistrationComplete} />
@@ -565,14 +589,18 @@ export default function Index() {
         </div>
 
         <Tabs defaultValue="game" className="w-full">
-          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-5 mb-6">
+          <TabsList className="grid w-full max-w-5xl mx-auto grid-cols-7 mb-6">
             <TabsTrigger value="game" className="text-lg font-semibold">
               <Icon name="Gamepad2" className="mr-2" size={20} />
               Игра
             </TabsTrigger>
             <TabsTrigger value="levels" className="text-lg font-semibold">
               <Icon name="FolderOpen" className="mr-2" size={20} />
-              Уровни
+              Мои уровни
+            </TabsTrigger>
+            <TabsTrigger value="community" className="text-lg font-semibold">
+              <Icon name="Globe" className="mr-2" size={20} />
+              Сообщество
             </TabsTrigger>
             <TabsTrigger value="leaderboard" className="text-lg font-semibold">
               <Icon name="Trophy" className="mr-2" size={20} />
@@ -585,6 +613,10 @@ export default function Index() {
             <TabsTrigger value="achievements" className="text-lg font-semibold">
               <Icon name="Award" className="mr-2" size={20} />
               Достижения
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="text-lg font-semibold">
+              <Icon name="Settings" className="mr-2" size={20} />
+              Профиль
             </TabsTrigger>
           </TabsList>
 
@@ -726,59 +758,20 @@ export default function Index() {
           </TabsContent>
 
           <TabsContent value="levels">
-            <Card className="p-8 shadow-2xl">
-              <h2 className="text-3xl font-bold mb-6 flex items-center">
-                <Icon name="Trophy" className="mr-3 text-secondary" size={32} />
-                Сохранённые уровни
-              </h2>
+            <MyLevels
+              levels={savedLevels}
+              onPlayLevel={(level) => {
+                loadLevel(level);
+                const tabsList = document.querySelector('[role="tablist"]');
+                const gameTab = tabsList?.querySelector('[value="game"]') as HTMLElement;
+                gameTab?.click();
+              }}
+              onDeleteLevel={deleteLevel}
+            />
+          </TabsContent>
 
-              {savedLevels.length === 0 ? (
-                <div className="text-center py-16">
-                  <Icon name="FolderOpen" className="mx-auto mb-4 text-muted-foreground" size={64} />
-                  <p className="text-xl text-muted-foreground mb-2">Пока нет сохранённых уровней</p>
-                  <p className="text-muted-foreground">Создайте свой первый уровень в редакторе!</p>
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {savedLevels.map(level => (
-                    <Card key={level.id} className="p-4 hover:shadow-lg transition-all border-2 hover:border-primary/50">
-                      <div className="mb-3">
-                        <div className="bg-sky-300 rounded-lg h-32 flex items-center justify-center text-4xl relative overflow-hidden">
-                          {level.blocks.slice(0, 8).map((block, i) => (
-                            <span key={i} className="absolute" style={{ left: i * 20, top: 50 }}>
-                              {getBlockEmoji(block.type)}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <h3 className="font-bold text-lg mb-3">{level.name}</h3>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => {
-                            loadLevel(level);
-                            const tabsList = document.querySelector('[role="tablist"]');
-                            const gameTab = tabsList?.querySelector('[value="game"]') as HTMLElement;
-                            gameTab?.click();
-                          }}
-                          size="sm"
-                          className="flex-1 font-semibold"
-                        >
-                          <Icon name="Play" className="mr-1" size={16} />
-                          Играть
-                        </Button>
-                        <Button
-                          onClick={() => deleteLevel(level.id)}
-                          variant="destructive"
-                          size="sm"
-                        >
-                          <Icon name="Trash2" size={16} />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </Card>
+          <TabsContent value="community">
+            <CommunityLevels onPlayLevel={handlePlayCommunityLevel} />
           </TabsContent>
 
           <TabsContent value="leaderboard">
@@ -915,6 +908,13 @@ export default function Index() {
                 ))}
               </div>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <ProfileSettings 
+              currentUsername={username}
+              onUsernameChange={handleUsernameChange}
+            />
           </TabsContent>
         </Tabs>
       </div>
