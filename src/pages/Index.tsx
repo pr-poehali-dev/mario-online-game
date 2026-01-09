@@ -710,7 +710,7 @@ export default function Index() {
                         className="h-20 text-3xl font-semibold flex-col gap-2"
                         onClick={() => setSelectedBlock(type)}
                       >
-                        <span className="text-4xl">{getBlockEmoji(type)}</span>
+                        <span className="text-4xl text-lime-400">{getBlockEmoji(type)}</span>
                         <span className="text-xs">
                           {type === 'platform' && 'Платформа'}
                           {type === 'coin' && 'Монета'}
