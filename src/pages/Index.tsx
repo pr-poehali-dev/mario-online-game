@@ -676,7 +676,7 @@ export default function Index() {
 
                   {!isPlaying && (
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                      <div className="bg-white/95 rounded-xl p-6 shadow-2xl text-center">
+                      <div className="rounded-xl p-6 shadow-2xl text-center bg-yellow-400">
                         <Icon name="Gamepad2" className="mx-auto mb-3 text-primary" size={48} />
                         <h3 className="text-2xl font-bold mb-2">Режим редактора</h3>
                         <p className="text-muted-foreground">
