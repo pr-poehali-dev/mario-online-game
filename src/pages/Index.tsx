@@ -647,9 +647,7 @@ export default function Index() {
                       </Button>
                     )}
                   </div>
-                  <div className="text-2xl font-bold text-primary">
-                    Счёт: {score}
-                  </div>
+                  <div className="text-2xl font-bold text-primary">Количество очков: 0</div>
                 </div>
 
                 <div
