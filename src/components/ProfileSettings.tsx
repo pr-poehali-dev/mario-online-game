@@ -78,7 +78,7 @@ export default function ProfileSettings({ currentUsername, onUsernameChange }: P
               <div className="text-2xl font-bold text-[#4A90E2] bg-[#4A90E2]/10 px-4 py-2 rounded-lg">
                 {currentUsername}
               </div>
-              <Button onClick={() => setIsEditing(true)} variant="outline">Изменить имя</Button>
+              <Button onClick={() => setIsEditing(true)} variant="outline">Изменить имя ✏️</Button>
             </div>
           )}
         </div>
