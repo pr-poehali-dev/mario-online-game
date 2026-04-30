@@ -896,9 +896,7 @@ export default function Index() {
                             <span>Получено</span>
                           </div>
                         ) : (
-                          <div className="text-2xl font-bold text-primary">
-                            +{achievement.reward} 🪙
-                          </div>
+                          <div className="text-2xl font-bold text-primary">+ 5000 🪙 </div>
                         )}
                       </div>
                     </div>
