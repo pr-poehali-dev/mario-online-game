@@ -580,9 +580,7 @@ export default function Index() {
               <Icon name="Award" className="text-accent" size={28} />
               <div>
                 <p className="text-xs text-muted-foreground">Достижения</p>
-                <p className="text-2xl font-bold text-primary">
-                  {achievements.filter(a => a.unlocked).length}/{achievements.length}
-                </p>
+                <p className="text-2xl font-bold text-primary">5/5</p>
               </div>
             </div>
           </Card>
