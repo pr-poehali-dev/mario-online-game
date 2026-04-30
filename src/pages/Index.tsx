@@ -816,10 +816,7 @@ export default function Index() {
                         onClick={() => buyShopItem(item.id)}
                         className="w-full font-semibold"
                         size="lg"
-                      >
-                        <Icon name="ShoppingCart" className="mr-2" size={18} />
-                        Купить за {item.price} 🪙
-                      </Button>
+                      >🛍️       Купить за 0 🪙 </Button>
                     )}
                   </Card>
                 ))}
